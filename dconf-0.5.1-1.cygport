@@ -1,0 +1,17 @@
+inherit gnome2
+
+
+PATCH_URI="0.5.1-libtool.patch"
+
+PKG_NAMES="dconf dconf-service libdconf0 libdconf-devel girepository-dconf1.0 vala-dconf"
+dconf_CONTENTS="usr/bin/*.exe usr/share/doc/"
+dconf_service_CONTENTS="etc/ usr/lib/dconf/ usr/lib/gio/ usr/share/dbus-1/"
+libdconf0_CONTENTS="usr/bin/cygdconf-0.dll"
+libdconf_devel_CONTENTS="usr/include/ usr/lib/lib* usr/lib/pkgconfig/ usr/share/gtk-doc/"
+girepository_dconf1_0_CONTENTS="usr/*/gir*/dconf-1.0.*"
+vala_dconf_CONTENTS="usr/share/vala*/vapi/dconf.*"
+
+DISTCLEANFILES='client/*.gir'
+
+CYGCONF_ARGS="--libexecdir=/usr/lib/dconf"
+MAKEOPTS+=" vapidir=$(pkg-config --variable=vapidir vala-0.10)"

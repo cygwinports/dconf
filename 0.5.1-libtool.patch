@@ -1,0 +1,112 @@
+--- origsrc/dconf-0.5.1/bin/Makefile.am	2010-07-26 09:10:20.000000000 -0500
++++ src/dconf-0.5.1/bin/Makefile.am	2010-11-07 08:35:50.109565500 -0600
+@@ -4,5 +4,5 @@ INCLUDES = -I$(top_srcdir)/common -I$(to
+ bin_PROGRAMS = dconf
+ 
+ dconf_VALAFLAGS = --vapidir ../client --pkg=gio-2.0 --pkg=posix --pkg=dconf
+-dconf_LDADD = $(gio_LIBS) ../client/libdconf.so.0
++dconf_LDADD = $(gio_LIBS) ../client/libdconf.la
+ dconf_SOURCES = dconf.vala dconf-update.vala ../gvdb/gvdb-builder.c gvdb.vapi fixes.vapi
+--- origsrc/dconf-0.5.1/client/Makefile.am	2010-09-15 08:34:58.000000000 -0500
++++ src/dconf-0.5.1/client/Makefile.am	2010-11-07 14:59:19.801428300 -0600
+@@ -1,12 +1,12 @@
+ if HAVE_INTROSPECTION
+ include $(INTROSPECTION_MAKEFILE)
+ 
+-dconf-1.0.gir: libdconf.so.0 libdconf.so
++dconf-1.0.gir: libdconf.la
+ dconf_1_0_gir_INCLUDES = Gio-2.0
+ dconf_1_0_gir_CFLAGS = $(INCLUDES)
+-dconf_1_0_gir_LIBS = dconf
++dconf_1_0_gir_LIBS = libdconf.la
+ dconf_1_0_gir_FILES = dconf-client.c dconf-client.h
+-dconf_1_0_gir_SCANNERFLAGS = --no-libtool --identifier-prefix=DConf
++dconf_1_0_gir_SCANNERFLAGS = --identifier-prefix=DConf
+ INTROSPECTION_GIRS = dconf-1.0.gir
+ 
+ girdir = $(datadir)/gir-1.0
+@@ -20,35 +20,24 @@ AM_CFLAGS = -std=c89 -Wall -Wmissing-pro
+ INCLUDES = -I$(top_srcdir)/common -I$(top_srcdir)/gvdb -I$(top_srcdir)/engine $(gio_CFLAGS)
+ 
+ shlibdir=$(libdir)
+-shlib_PROGRAMS = libdconf.so.0.0.0
+-nodist_noinst_DATA = libdconf.so.0 libdconf.so
+-
+-libdconf.so.0 libdconf.so: libdconf.so.0.0.0
+-	$(AM_V_GEN) ln -fs libdconf.so.0.0.0 $@
+-
+-install-data-hook:
+-	ln -fs libdconf.so.0.0.0 $(DESTDIR)$(shlibdir)/libdconf.so.0
+-	ln -fs libdconf.so.0.0.0 $(DESTDIR)$(shlibdir)/libdconf.so
+-
+-uninstall-hook:
+-	rm -f $(DESTDIR)$(shlibdir)/libdconf.so.0
+-	rm -f $(DESTDIR)$(shlibdir)/libdconf.so
++lib_LTLIBRARIES = libdconf.la
+ 
+ dconfinclude_HEADERS = \
+ 	dconf-client.h	\
+ 	dconf.h
+ 
+-libdconf_so_0_0_0_LDFLAGS = -shared -Wl,-soname=libdconf.so.0 $(gio_LIBS)
+-libdconf_so_0_0_0_SOURCES = \
++libdconf_la_LDFLAGS = -version-info 0:0:0 -no-undefined
++libdconf_la_LIBADD = $(gio_LIBS)
++libdconf_la_SOURCES = \
+ 	../common/dconf-shmdir.c	\
+ 	../common/dconf-paths.c		\
+ 	../engine/dconf-engine.c	\
+ 	../gvdb/gvdb-reader.c		\
+ 	dconf-client.vala engine.vapi
+-libdconf_so_0_0_0_VALAFLAGS = --library dconf --pkg=gio-2.0
++libdconf_la_VALAFLAGS = --library dconf --pkg=gio-2.0
+ 
+ EXTRA_DIST = dconf.vapi extra-docs.c
+-dconf.vapi: libdconf.so.0
++dconf.vapi: libdconf.la
+ 
+ dconf.deps:
+ 	$(AM_V_GEN) echo gio-2.0 > dconf.deps
+@@ -59,4 +48,4 @@ vapidir = $(datadir)/vala/vapi
+ pkgconfigdir = $(libdir)/pkgconfig
+ pkgconfig_DATA = dconf.pc
+ 
+-CLEANFILES = $(dist_gir_DATA) $(typelib_DATA) dconf.deps libdconf.so.0 libdconf.so
++CLEANFILES = $(gir_DATA) $(typelib_DATA) dconf.deps
+--- origsrc/dconf-0.5.1/configure.ac	2010-09-15 15:11:24.000000000 -0500
++++ src/dconf-0.5.1/configure.ac	2010-11-07 08:37:11.169677400 -0600
+@@ -12,6 +12,7 @@ AM_SILENT_RULES([yes])
+ 
+ # Check for programs
+ AC_PROG_CC
++AC_PROG_LIBTOOL
+ AM_PROG_VALAC([0.9.5])
+ 
+ # Introspection
+--- origsrc/dconf-0.5.1/editor/Makefile.am	2010-09-15 08:34:58.000000000 -0500
++++ src/dconf-0.5.1/editor/Makefile.am	2010-11-07 08:36:11.849595500 -0600
+@@ -2,5 +2,5 @@ bin_PROGRAMS = dconf-editor
+ 
+ AM_CFLAGS = $(gtk_CFLAGS) $(libxml_CFLAGS) -I$(top_srcdir)/common -I$(top_srcdir)/client
+ AM_VALAFLAGS = --vapidir ../client --pkg gtk+-2.0 --pkg libxml-2.0 --pkg dconf
+-dconf_editor_LDADD = ../client/libdconf.so.0 $(gtk_LIBS) $(gee_LIBS) $(libxml_LIBS)
++dconf_editor_LDADD = ../client/libdconf.la $(gtk_LIBS) $(gee_LIBS) $(libxml_LIBS)
+ dconf_editor_SOURCES = dconf-editor.vala dconf-model.vala dconf-schema.vala dconf-view.vala
+--- origsrc/dconf-0.5.1/gsettings/Makefile.am	2010-07-26 09:10:20.000000000 -0500
++++ src/dconf-0.5.1/gsettings/Makefile.am	2010-11-07 14:50:22.702708000 -0600
+@@ -1,11 +1,11 @@
+ AM_CFLAGS = -std=c89 -Wall -Wmissing-prototypes -Wwrite-strings -fPIC -DPIC
+ INCLUDES = -I$(top_srcdir)/common -I$(top_srcdir)/gvdb -I$(top_srcdir)/engine $(gio_CFLAGS)
+ 
+-giomodules_PROGRAMS = libdconfsettings.so
++giomodules_LTLIBRARIES = libdconfsettings.la
+ 
+-libdconfsettings_so_LDADD = $(gio_LIBS)
+-libdconfsettings_so_LDFLAGS = -module -avoid-version -shared
+-libdconfsettings_so_SOURCES = \
++libdconfsettings_la_LIBADD = $(gio_LIBS)
++libdconfsettings_la_LDFLAGS = -module -avoid-version -no-undefined
++libdconfsettings_la_SOURCES = \
+ 	../engine/dconf-engine.c	\
+ 	../common/dconf-shmdir.c	\
+ 	../gvdb/gvdb-reader.c		\
