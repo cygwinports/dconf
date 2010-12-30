@@ -1,5 +1,5 @@
---- origsrc/dconf-0.5.1/bin/Makefile.am	2010-07-26 09:10:20.000000000 -0500
-+++ src/dconf-0.5.1/bin/Makefile.am	2010-11-07 08:35:50.109565500 -0600
+--- origsrc/dconf-0.6/bin/Makefile.am	2010-08-03 15:24:14.000000000 -0500
++++ src/dconf-0.6/bin/Makefile.am	2010-12-29 20:50:14.038081700 -0600
 @@ -4,5 +4,5 @@ INCLUDES = -I$(top_srcdir)/common -I$(to
  bin_PROGRAMS = dconf
  
@@ -7,25 +7,9 @@
 -dconf_LDADD = $(gio_LIBS) ../client/libdconf.so.0
 +dconf_LDADD = $(gio_LIBS) ../client/libdconf.la
  dconf_SOURCES = dconf.vala dconf-update.vala ../gvdb/gvdb-builder.c gvdb.vapi fixes.vapi
---- origsrc/dconf-0.5.1/client/Makefile.am	2010-09-15 08:34:58.000000000 -0500
-+++ src/dconf-0.5.1/client/Makefile.am	2010-11-07 14:59:19.801428300 -0600
-@@ -1,12 +1,12 @@
- if HAVE_INTROSPECTION
- include $(INTROSPECTION_MAKEFILE)
- 
--dconf-1.0.gir: libdconf.so.0 libdconf.so
-+dconf-1.0.gir: libdconf.la
- dconf_1_0_gir_INCLUDES = Gio-2.0
- dconf_1_0_gir_CFLAGS = $(INCLUDES)
--dconf_1_0_gir_LIBS = dconf
-+dconf_1_0_gir_LIBS = libdconf.la
- dconf_1_0_gir_FILES = dconf-client.c dconf-client.h
--dconf_1_0_gir_SCANNERFLAGS = --no-libtool --identifier-prefix=DConf
-+dconf_1_0_gir_SCANNERFLAGS = --identifier-prefix=DConf
- INTROSPECTION_GIRS = dconf-1.0.gir
- 
- girdir = $(datadir)/gir-1.0
-@@ -20,35 +20,24 @@ AM_CFLAGS = -std=c89 -Wall -Wmissing-pro
+--- origsrc/dconf-0.6/client/Makefile.am	2010-12-21 11:25:23.000000000 -0600
++++ src/dconf-0.6/client/Makefile.am	2010-12-29 20:50:14.038081700 -0600
+@@ -3,35 +3,24 @@ CFLAGS += -Wno-error
  INCLUDES = -I$(top_srcdir)/common -I$(top_srcdir)/gvdb -I$(top_srcdir)/engine $(gio_CFLAGS)
  
  shlibdir=$(libdir)
@@ -67,14 +51,12 @@
  
  dconf.deps:
  	$(AM_V_GEN) echo gio-2.0 > dconf.deps
-@@ -59,4 +48,4 @@ vapidir = $(datadir)/vala/vapi
- pkgconfigdir = $(libdir)/pkgconfig
- pkgconfig_DATA = dconf.pc
- 
--CLEANFILES = $(dist_gir_DATA) $(typelib_DATA) dconf.deps libdconf.so.0 libdconf.so
-+CLEANFILES = $(gir_DATA) $(typelib_DATA) dconf.deps
---- origsrc/dconf-0.5.1/configure.ac	2010-09-15 15:11:24.000000000 -0500
-+++ src/dconf-0.5.1/configure.ac	2010-11-07 08:37:11.169677400 -0600
+--- /dev/null
++++ src/dconf-0.6/client/libdconf_la_vala.stamp
+@@ -0,0 +1,1
++timestamp
+--- origsrc/dconf-0.6/configure.ac	2010-12-21 11:33:48.000000000 -0600
++++ src/dconf-0.6/configure.ac	2010-12-29 20:50:14.053681800 -0600
 @@ -12,6 +12,7 @@ AM_SILENT_RULES([yes])
  
  # Check for programs
@@ -82,18 +64,18 @@
 +AC_PROG_LIBTOOL
  AM_PROG_VALAC([0.9.5])
  
- # Introspection
---- origsrc/dconf-0.5.1/editor/Makefile.am	2010-09-15 08:34:58.000000000 -0500
-+++ src/dconf-0.5.1/editor/Makefile.am	2010-11-07 08:36:11.849595500 -0600
-@@ -2,5 +2,5 @@ bin_PROGRAMS = dconf-editor
- 
- AM_CFLAGS = $(gtk_CFLAGS) $(libxml_CFLAGS) -I$(top_srcdir)/common -I$(top_srcdir)/client
- AM_VALAFLAGS = --vapidir ../client --pkg gtk+-2.0 --pkg libxml-2.0 --pkg dconf
+ # Gtk-doc support
+--- origsrc/dconf-0.6/editor/Makefile.am	2010-12-18 10:36:32.000000000 -0600
++++ src/dconf-0.6/editor/Makefile.am	2010-12-29 20:51:29.261412900 -0600
+@@ -3,5 +3,5 @@ bin_PROGRAMS = dconf-editor
+ AM_CFLAGS = $(gtk_CFLAGS) $(libxml_CFLAGS) -I$(top_srcdir)/common -I$(top_srcdir)/client 
+ AM_VALAFLAGS = --vapidir ../client --pkg gtk+-3.0 --pkg libxml-2.0 --pkg dconf
+ CFLAGS += -Wno-error
 -dconf_editor_LDADD = ../client/libdconf.so.0 $(gtk_LIBS) $(gee_LIBS) $(libxml_LIBS)
 +dconf_editor_LDADD = ../client/libdconf.la $(gtk_LIBS) $(gee_LIBS) $(libxml_LIBS)
  dconf_editor_SOURCES = dconf-editor.vala dconf-model.vala dconf-schema.vala dconf-view.vala
---- origsrc/dconf-0.5.1/gsettings/Makefile.am	2010-07-26 09:10:20.000000000 -0500
-+++ src/dconf-0.5.1/gsettings/Makefile.am	2010-11-07 14:50:22.702708000 -0600
+--- origsrc/dconf-0.6/gsettings/Makefile.am	2010-12-21 11:26:46.000000000 -0600
++++ src/dconf-0.6/gsettings/Makefile.am	2010-12-29 20:50:14.069281800 -0600
 @@ -1,11 +1,11 @@
  AM_CFLAGS = -std=c89 -Wall -Wmissing-prototypes -Wwrite-strings -fPIC -DPIC
  INCLUDES = -I$(top_srcdir)/common -I$(top_srcdir)/gvdb -I$(top_srcdir)/engine $(gio_CFLAGS)

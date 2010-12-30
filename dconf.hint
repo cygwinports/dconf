@@ -1,5 +1,5 @@
 category: Gnome
-requires: libdconf0 libglib2.0_0 libgtk2.0_0 libpango1.0_0 libxml2
+requires: libdconf0 libglib2.0_0 libgtk3.0_0 libpango1.0_0 libxml2
 external-source: dconf
 sdesc: "GNOME configuration clients"
 ldesc: "dconf is a low-level configuration system. Its main purpose is 

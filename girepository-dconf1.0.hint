@@ -1,7 +1,0 @@
-category: Gnome
-requires: libdconf0 girepository-GLib2.0
-external-source: dconf
-sdesc: "GNOME configuration client library (GObject Introspection data)"
-ldesc: "dconf is a low-level configuration system. Its main purpose is 
-to provide a backend to GSettings on platforms that don't already have 
-configuration storage systems."
