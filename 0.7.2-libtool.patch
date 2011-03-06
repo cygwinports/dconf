@@ -1,0 +1,133 @@
+--- origsrc/dconf-0.7.2/bin/Makefile.am	2011-01-31 09:45:31.000000000 -0600
++++ src/dconf-0.7.2/bin/Makefile.am	2011-03-06 14:40:53.625256800 -0600
+@@ -5,5 +5,5 @@ INCLUDES = -I$(top_srcdir)/common -I$(to
+ bin_PROGRAMS = dconf
+ 
+ dconf_VALAFLAGS = --vapidir ../client --pkg=gio-2.0 --pkg=posix --pkg=dconf
+-dconf_LDADD = $(gio_LIBS) ../client/libdconf.so.0
++dconf_LDADD = $(gio_LIBS) ../client/libdconf.la
+ dconf_SOURCES = dconf.vala dconf-update.vala ../gvdb/gvdb-builder.c gvdb.vapi fixes.vapi
+--- origsrc/dconf-0.7.2/client/Makefile.am	2011-01-31 09:45:31.000000000 -0600
++++ src/dconf-0.7.2/client/Makefile.am	2011-03-06 14:42:28.239421700 -0600
+@@ -2,37 +2,24 @@ AM_CFLAGS = -std=c89 -Wall -Wmissing-pro
+ CFLAGS += -Wno-error
+ INCLUDES = -I$(top_srcdir)/common -I$(top_srcdir)/gvdb -I$(top_srcdir)/engine $(gio_CFLAGS)
+ 
+-shlibdir=$(libdir)
+-shlib_PROGRAMS = libdconf.so.0.0.0
+-nodist_noinst_DATA = libdconf.so.0 libdconf.so
+-
+-libdconf.so.0 libdconf.so: libdconf.so.0.0.0
+-	$(AM_V_GEN) ln -fs libdconf.so.0.0.0 $@
+-
+-install-data-hook:
+-	ln -fs libdconf.so.0.0.0 $(DESTDIR)$(shlibdir)/libdconf.so.0
+-	ln -fs libdconf.so.0.0.0 $(DESTDIR)$(shlibdir)/libdconf.so
+-
+-uninstall-hook:
+-	rm -f $(DESTDIR)$(shlibdir)/libdconf.so.0
+-	rm -f $(DESTDIR)$(shlibdir)/libdconf.so
++lib_LTLIBRARIES = libdconf.la
+ 
+ dconfinclude_HEADERS = \
+ 	dconf-client.h	\
+ 	dconf.h
+ 
+-libdconf_so_0_0_0_LDADD = $(gio_LIBS)
+-libdconf_so_0_0_0_LDFLAGS = -shared -Wl,-soname=libdconf.so.0
+-libdconf_so_0_0_0_SOURCES = \
++libdconf_la_LIBADD = $(gio_LIBS)
++libdconf_la_LDFLAGS = -version-info 0:0:0 -no-undefined
++libdconf_la_SOURCES = \
+ 	../common/dconf-shmdir.c	\
+ 	../common/dconf-paths.c		\
+ 	../engine/dconf-engine.c	\
+ 	../gvdb/gvdb-reader.c		\
+ 	dconf-client.vala engine.vapi
+-libdconf_so_0_0_0_VALAFLAGS = --library dconf --pkg=gio-2.0
++libdconf_la_VALAFLAGS = --library dconf --pkg=gio-2.0
+ 
+ EXTRA_DIST = dconf.vapi extra-docs.c
+-dconf.vapi: libdconf.so.0
++dconf.vapi: libdconf.la
+ 
+ dconf.deps:
+ 	$(AM_V_GEN) echo gio-2.0 > dconf.deps
+--- origsrc/dconf-0.7.2/client/libdconf_la_vala.stamp
++++ src/dconf-0.7.2/client/libdconf_la_vala.stamp
+@@ -0,0 +1,1 @@
++timestamp
+--- origsrc/dconf-0.7.2/configure.ac	2011-02-05 09:28:02.000000000 -0600
++++ src/dconf-0.7.2/configure.ac	2011-03-06 14:42:40.797443600 -0600
+@@ -13,6 +13,7 @@ AM_SILENT_RULES([yes])
+ 
+ # Check for programs
+ AC_PROG_CC
++AC_PROG_LIBTOOL
+ AM_PROG_VALAC([0.11.4])
+ 
+ # Gtk-doc support
+--- origsrc/dconf-0.7.2/dbus-1/Makefile.am	2011-01-31 09:45:31.000000000 -0600
++++ src/dconf-0.7.2/dbus-1/Makefile.am	2011-03-06 15:06:01.833509600 -0600
+@@ -7,28 +7,12 @@ dconf_dbus_1include_HEADERS = dconf-dbus
+ pkgconfigdir = $(libdir)/pkgconfig
+ pkgconfig_DATA = dconf-dbus-1.pc
+ 
+-shlibdir = $(libdir)
+-shlib_PROGRAMS = libdconf-dbus-1.so.0.0.0
++lib_LTLIBRARIES = libdconf-dbus-1.la
+ 
+-libdconf_dbus_1_so_0_0_0_LDADD = $(glib_LIBS) $(dbus_LIBS)
+-libdconf_dbus_1_so_0_0_0_LDFLAGS = -shared -Wl,-soname=libdconf-dbus-1.so.0
+-libdconf_dbus_1_so_0_0_0_SOURCES = \
++libdconf_dbus_1_la_LIBADD = $(glib_LIBS) $(dbus_LIBS)
++libdconf_dbus_1_la_LDFLAGS = -version-info 0:0:0 -no-undefined
++libdconf_dbus_1_la_SOURCES = \
+ 	../engine/dconf-engine.c	\
+ 	../common/dconf-shmdir.c	\
+ 	../gvdb/gvdb-reader.c		\
+ 	dconf-dbus-1.c
+-
+-noinst_DATA = libdconf-dbus-1.so libdconf-dbus-1.so.0
+-
+-libdconf-dbus-1.so.0 libdconf-dbus-1.so: libdconf-dbus-1.so.0.0.0
+-	$(AM_V_GEN) ln -fs libdconf-dbus-1.so.0.0.0 $@
+-
+-install-data-hook:
+-	ln -fs libdconf-dbus-1.so.0.0.0 $(DESTDIR)$(shlibdir)/libdconf-dbus-1.so.0
+-	ln -fs libdconf-dbus-1.so.0.0.0 $(DESTDIR)$(shlibdir)/libdconf-dbus-1.so
+-
+-uninstall-hook:
+-	rm -f $(DESTDIR)$(shlibdir)/libdconf-dbus-1.so.0
+-	rm -f $(DESTDIR)$(shlibdir)/libdconf-dbus-1.so
+-
+-CLEANFILES = libdconf-dbus-1.so.0 libdconf-dbus-1.so
+--- origsrc/dconf-0.7.2/editor/Makefile.am	2011-01-17 23:48:29.000000000 -0600
++++ src/dconf-0.7.2/editor/Makefile.am	2011-03-06 14:42:57.099472100 -0600
+@@ -3,7 +3,7 @@ bin_PROGRAMS = dconf-editor
+ AM_CFLAGS = $(gtk_CFLAGS) $(gmodule_CFLAGS) $(libxml_CFLAGS) -I$(top_srcdir)/common -I$(top_srcdir)/client -DPKGDATADIR=\"@datadir@/dconf-editor\"
+ AM_VALAFLAGS = --vapidir ../client --pkg gtk+-3.0 --pkg gmodule-2.0 --pkg libxml-2.0 --pkg dconf
+ CFLAGS += -Wno-error
+-dconf_editor_LDADD = ../client/libdconf.so.0 $(gtk_LIBS) $(gmodule_LIBS) $(gee_LIBS) $(libxml_LIBS)
++dconf_editor_LDADD = ../client/libdconf.la $(gtk_LIBS) $(gmodule_LIBS) $(gee_LIBS) $(libxml_LIBS)
+ dconf_editor_SOURCES = config.vapi dconf-editor.vala dconf-model.vala dconf-schema.vala dconf-view.vala
+ 
+ desktopdir = $(datadir)/applications
+--- origsrc/dconf-0.7.2/gsettings/Makefile.am	2011-01-31 09:45:31.000000000 -0600
++++ src/dconf-0.7.2/gsettings/Makefile.am	2011-03-06 14:43:39.359945700 -0600
+@@ -1,11 +1,11 @@
+ AM_CFLAGS = -std=c89 -Wall -Wmissing-prototypes -Wwrite-strings -fPIC -DPIC
+ INCLUDES = -I$(top_srcdir)/common -I$(top_srcdir)/gvdb -I$(top_srcdir)/engine $(gio_CFLAGS)
+ 
+-giomodules_PROGRAMS = libdconfsettings.so
++giomodules_LTLIBRARIES = libdconfsettings.la
+ 
+-libdconfsettings_so_LDADD = $(gio_LIBS)
+-libdconfsettings_so_LDFLAGS = -shared
+-libdconfsettings_so_SOURCES = \
++libdconfsettings_la_LIBADD = $(gio_LIBS)
++libdconfsettings_la_LDFLAGS = -module -avoid-version -no-undefined
++libdconfsettings_la_SOURCES = \
+ 	../engine/dconf-engine.c	\
+ 	../common/dconf-shmdir.c	\
+ 	../gvdb/gvdb-reader.c		\

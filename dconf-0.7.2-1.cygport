@@ -1,0 +1,20 @@
+inherit gnome2
+
+
+PATCH_URI="0.7.2-libtool.patch"
+
+PKG_NAMES="dconf dconf-editor dconf-service libdconf0 libdconf-devel
+           libdconf-dbus1_0 libdconf-dbus1-devel vala-dconf"
+dconf_CONTENTS="usr/bin/dconf.exe usr/share/doc/"
+dconf_editor_CONTENTS="usr/bin/dconf-editor.exe usr/share/applications/ usr/share/dconf-editor/"
+dconf_service_CONTENTS="etc/ usr/lib/dconf/ usr/lib/gio/ usr/share/dbus-1/"
+libdconf0_CONTENTS="usr/bin/cygdconf-0.dll"
+libdconf_devel_CONTENTS="usr/include/dconf/ usr/lib/libdconf.*
+                         usr/lib/pkgconfig/dconf.pc usr/share/gtk-doc/"
+libdconf_dbus1_0_CONTENTS="usr/bin/cygdconf-dbus-1-0.dll"
+libdconf_dbus1_devel_CONTENTS="usr/include/dconf-dbus-1/ usr/lib/libdconf-dbus-1.*
+                               usr/lib/pkgconfig/dconf-dbus-1.pc"
+vala_dconf_CONTENTS="usr/share/vala*/vapi/dconf.*"
+
+# requires vala-0.11
+CYGCONF_ARGS="--libexecdir=/usr/lib/dconf ac_cv_path_VALAC= "

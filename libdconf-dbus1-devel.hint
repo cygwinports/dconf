@@ -1,7 +1,7 @@
 category: Gnome
-requires: libdconf0 libglib2.0-devel
+requires: libdconf-dbus1_0 libdbus1-devel libglib2.0-devel
 external-source: dconf
-sdesc: "GNOME configuration client library (GDBus development)"
+sdesc: "GNOME configuration client library (libdbus development)"
 ldesc: "dconf is a low-level configuration system. Its main purpose is 
 to provide a backend to GSettings on platforms that don't already have 
 configuration storage systems."
