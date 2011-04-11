@@ -57,14 +57,14 @@
 +++ src/dconf-0.7.2/client/libdconf_la_vala.stamp
 @@ -0,0 +1,1 @@
 +timestamp
---- origsrc/dconf-0.7.2/configure.ac	2011-02-05 09:28:02.000000000 -0600
-+++ src/dconf-0.7.2/configure.ac	2011-03-06 14:42:40.797443600 -0600
+--- origsrc/dconf-0.7.3/configure.ac
++++ src/dconf-0.7.3/configure.ac
 @@ -13,6 +13,7 @@ AM_SILENT_RULES([yes])
  
  # Check for programs
  AC_PROG_CC
 +AC_PROG_LIBTOOL
- AM_PROG_VALAC([0.11.4])
+ AM_PROG_VALAC([0.11.7])
  
  # Gtk-doc support
 --- origsrc/dconf-0.7.2/dbus-1/Makefile.am	2011-01-31 09:45:31.000000000 -0600
