@@ -6,7 +6,8 @@ PATCH_URI="0.7.3-libtool.patch"
 PKG_NAMES="dconf dconf-editor dconf-service libdconf0 libdconf-devel
            libdconf-dbus1_0 libdconf-dbus1-devel vala-dconf"
 dconf_CONTENTS="usr/bin/dconf.exe usr/share/doc/"
-dconf_editor_CONTENTS="usr/bin/dconf-editor.exe usr/share/applications/ usr/share/dconf-editor/"
+dconf_editor_CONTENTS="etc/postinstall usr/bin/dconf-editor.exe usr/share/applications/
+                       usr/share/dconf-editor/ usr/share/glib-2.0/schemas/"
 dconf_service_CONTENTS="etc/ usr/lib/dconf/ usr/lib/gio/ usr/share/dbus-1/"
 libdconf0_CONTENTS="usr/bin/cygdconf-0.dll"
 libdconf_devel_CONTENTS="usr/include/dconf/ usr/lib/libdconf.*
