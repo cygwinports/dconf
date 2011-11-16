@@ -3,6 +3,13 @@ inherit gnome2
 
 PATCH_URI="0.7.3-libtool.patch"
 
+DEPEND="gnome-common
+	pkgconfig(dbus-1)
+	pkgconfig(gtk+-3.0)
+	pkgconfig(libxml-2.0)
+	vala(gtk+-3.0)
+	vala(libxml-2.0)"
+
 PKG_NAMES="dconf dconf-editor dconf-service libdconf0 libdconf-devel
            libdconf-dbus1_0 libdconf-dbus1-devel vala-dconf"
 dconf_CONTENTS="usr/bin/dconf.exe usr/share/doc/"
