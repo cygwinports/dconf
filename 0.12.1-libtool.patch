@@ -1,18 +1,22 @@
---- origsrc/dconf-0.10.0/bin/Makefile.am
-+++ src/dconf-0.10.0/bin/Makefile.am
+--- origsrc/dconf-0.12.1/bin/Makefile.am	2012-03-19 08:31:24.000000000 -0500
++++ src/dconf-0.12.1/bin/Makefile.am	2012-05-02 00:25:48.434811200 -0500
 @@ -5,7 +5,7 @@ INCLUDES = -I$(top_srcdir)/common -I$(to
  bin_PROGRAMS = dconf
  
  dconf_VALAFLAGS = --vapidir ../client --pkg=gio-2.0 --pkg=posix --pkg=dconf
 -dconf_LDADD = $(gio_LIBS) ../client/libdconf.so.0
 +dconf_LDADD = $(gio_LIBS) ../client/libdconf.la
- dconf_SOURCES = dconf.vala dconf-update.vala dconf-dump.vala ../gvdb/gvdb-builder.c gvdb.vapi fixes.vapi
+ dconf_SOURCES = dconf.vala dconf-update.vala dconf-dump.vala ../gvdb/gvdb-builder.c gvdb.vapi
  
  completiondir = $(sysconfdir)/bash_completion.d
---- origsrc/dconf-0.7.2/client/Makefile.am	2011-01-31 09:45:31.000000000 -0600
-+++ src/dconf-0.7.2/client/Makefile.am	2011-03-06 14:42:28.239421700 -0600
+--- origsrc/dconf-0.12.1/client/libdconf_la_vala.stamp	1969-12-31 18:00:00.000000000 -0600
++++ src/dconf-0.12.1/client/libdconf_la_vala.stamp	2012-05-02 00:27:23.335239200 -0500
+@@ -0,0 +1 @@
++timestamp
+--- origsrc/dconf-0.12.1/client/Makefile.am	2012-03-26 09:29:26.000000000 -0500
++++ src/dconf-0.12.1/client/Makefile.am	2012-05-02 00:27:12.142599000 -0500
 @@ -2,37 +2,24 @@ AM_CFLAGS = -std=c89 -Wall -Wmissing-pro
- CFLAGS += -Wno-error
+ CFLAGS += -Wno-error -Wno-unused-but-set-variable -Wno-unused-variable
  INCLUDES = -I$(top_srcdir)/common -I$(top_srcdir)/gvdb -I$(top_srcdir)/engine $(gio_CFLAGS)
  
 -shlibdir=$(libdir)
@@ -55,22 +59,24 @@
  
  dconf.deps:
  	$(AM_V_GEN) echo gio-2.0 > dconf.deps
---- origsrc/dconf-0.7.2/client/libdconf_la_vala.stamp
-+++ src/dconf-0.7.2/client/libdconf_la_vala.stamp
-@@ -0,0 +1,1 @@
-+timestamp
---- origsrc/dconf-0.7.3/configure.ac
-+++ src/dconf-0.7.3/configure.ac
+@@ -43,4 +30,4 @@ vapidir = $(datadir)/vala/vapi
+ pkgconfigdir = $(libdir)/pkgconfig
+ pkgconfig_DATA = dconf.pc
+ 
+-CLEANFILES = dconf.deps libdconf.so.0 libdconf.so
++CLEANFILES = dconf.deps
+--- origsrc/dconf-0.12.1/configure.ac	2012-05-01 00:08:56.000000000 -0500
++++ src/dconf-0.12.1/configure.ac	2012-05-02 00:27:37.256035400 -0500
 @@ -13,6 +13,7 @@ AM_SILENT_RULES([yes])
  
  # Check for programs
  AC_PROG_CC
 +AC_PROG_LIBTOOL
- AM_PROG_VALAC([0.11.7])
+ AM_PROG_VALAC([0.15.1])
  
- # Gtk-doc support
---- origsrc/dconf-0.7.2/dbus-1/Makefile.am	2011-01-31 09:45:31.000000000 -0600
-+++ src/dconf-0.7.2/dbus-1/Makefile.am	2011-03-06 15:06:01.833509600 -0600
+ # Use GSettings
+--- origsrc/dconf-0.12.1/dbus-1/Makefile.am	2012-03-26 09:29:26.000000000 -0500
++++ src/dconf-0.12.1/dbus-1/Makefile.am	2012-05-02 00:29:13.793557100 -0500
 @@ -7,28 +7,12 @@ dconf_dbus_1include_HEADERS = dconf-dbus
  pkgconfigdir = $(libdir)/pkgconfig
  pkgconfig_DATA = dconf-dbus-1.pc
@@ -104,19 +110,19 @@
 -	rm -f $(DESTDIR)$(shlibdir)/libdconf-dbus-1.so
 -
 -CLEANFILES = libdconf-dbus-1.so.0 libdconf-dbus-1.so
---- origsrc/dconf-0.7.2/editor/Makefile.am	2011-01-17 23:48:29.000000000 -0600
-+++ src/dconf-0.7.2/editor/Makefile.am	2011-03-06 14:42:57.099472100 -0600
+--- origsrc/dconf-0.12.1/editor/Makefile.am	2012-03-06 22:49:37.000000000 -0600
++++ src/dconf-0.12.1/editor/Makefile.am	2012-05-02 00:29:28.765413400 -0500
 @@ -3,7 +3,7 @@ bin_PROGRAMS = dconf-editor
  AM_CFLAGS = $(gtk_CFLAGS) $(gmodule_CFLAGS) $(libxml_CFLAGS) -I$(top_srcdir)/common -I$(top_srcdir)/client -DPKGDATADIR=\"@datadir@/dconf-editor\"
  AM_VALAFLAGS = --vapidir ../client --pkg gtk+-3.0 --pkg gmodule-2.0 --pkg libxml-2.0 --pkg dconf
- CFLAGS += -Wno-error
+ CFLAGS += -Wno-error -Wno-unused-but-set-variable -Wno-unused-variable
 -dconf_editor_LDADD = ../client/libdconf.so.0 $(gtk_LIBS) $(gmodule_LIBS) $(gee_LIBS) $(libxml_LIBS)
 +dconf_editor_LDADD = ../client/libdconf.la $(gtk_LIBS) $(gmodule_LIBS) $(gee_LIBS) $(libxml_LIBS)
  dconf_editor_SOURCES = config.vapi dconf-editor.vala dconf-model.vala dconf-schema.vala dconf-view.vala
  
  desktopdir = $(datadir)/applications
---- origsrc/dconf-0.7.2/gsettings/Makefile.am	2011-01-31 09:45:31.000000000 -0600
-+++ src/dconf-0.7.2/gsettings/Makefile.am	2011-03-06 14:43:39.359945700 -0600
+--- origsrc/dconf-0.12.1/gsettings/Makefile.am	2012-03-26 09:29:26.000000000 -0500
++++ src/dconf-0.12.1/gsettings/Makefile.am	2012-05-02 00:30:27.868793900 -0500
 @@ -1,11 +1,11 @@
  AM_CFLAGS = -std=c89 -Wall -Wmissing-prototypes -Wwrite-strings -fPIC -DPIC
  INCLUDES = -I$(top_srcdir)/common -I$(top_srcdir)/gvdb -I$(top_srcdir)/engine $(gio_CFLAGS)
@@ -128,7 +134,7 @@
 -libdconfsettings_so_LDFLAGS = -shared
 -libdconfsettings_so_SOURCES = \
 +libdconfsettings_la_LIBADD = $(gio_LIBS)
-+libdconfsettings_la_LDFLAGS = -module -avoid-version -no-undefined
++libdconfsettings_la_LDFLAGS = -shared -module -avoid-version -no-undefined
 +libdconfsettings_la_SOURCES = \
  	../engine/dconf-engine.c	\
  	../common/dconf-shmdir.c	\
