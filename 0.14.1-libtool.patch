@@ -1,0 +1,296 @@
+--- origsrc/dconf-0.14.1/bin/Makefile.am	2012-08-13 22:35:15.000000000 -0500
++++ src/dconf-0.14.1/bin/Makefile.am	2012-12-19 01:17:53.262420600 -0600
+@@ -11,7 +11,7 @@ dconf_CFLAGS = \
+ 	-w
+ 
+ dconf_LDADD = \
+-	../client/libdconf.so.1		\
++	../client/libdconf.la	\
+ 	$(gio_LIBS)
+ 
+ dconf_SOURCES = \
+--- origsrc/dconf-0.14.1/client/Makefile.am	2012-08-13 22:35:15.000000000 -0500
++++ src/dconf-0.14.1/client/Makefile.am	2012-12-19 01:20:47.826405100 -0600
+@@ -1,21 +1,8 @@
+ include $(top_srcdir)/Makefile.gtester
+ 
+-shlibdir=$(libdir)
+-shlib_PROGRAMS = libdconf.so.1.0.0
+-nodist_noinst_DATA = libdconf.so.1 libdconf.so
++lib_LTLIBRARIES = libdconf.la
+ noinst_LIBRARIES = libdconf-client.a
+ 
+-libdconf.so.1 libdconf.so: libdconf.so.1.0.0
+-	$(AM_V_GEN) ln -fs libdconf.so.1.0.0 $@
+-
+-install-data-hook:
+-	ln -fs libdconf.so.1.0.0 $(DESTDIR)$(shlibdir)/libdconf.so.1
+-	ln -fs libdconf.so.1.0.0 $(DESTDIR)$(shlibdir)/libdconf.so
+-
+-uninstall-hook:
+-	rm -f $(DESTDIR)$(shlibdir)/libdconf.so.1
+-	rm -f $(DESTDIR)$(shlibdir)/libdconf.so
+-
+ dconfinclude_HEADERS = dconf.h
+ dconfclientinclude_HEADERS = dconf-client.h
+ dconfclientincludedir = $(dconfincludedir)/client
+@@ -24,16 +11,16 @@ libdconf_client_a_CFLAGS = $(gio_CFLAGS)
+ libdconf_client_a_SOURCES = \
+ 	dconf-client.c
+ 
+-libdconf_so_1_0_0_CFLAGS = $(libdconf_client_a_CFLAGS) -fPIC -DPIC
+-libdconf_so_1_0_0_LDADD = \
+-	../engine/libdconf-engine-shared.a		\
+-	../common/libdconf-common-shared.a		\
+-	../gdbus/libdconf-gdbus-thread-shared.a		\
+-	../gvdb/libgvdb-shared.a			\
+-	../shm/libdconf-shm-shared.a			\
++libdconf_la_CFLAGS = $(libdconf_client_a_CFLAGS)
++libdconf_la_LIBADD = \
++	../engine/libdconf-engine-shared.la		\
++	../common/libdconf-common-shared.la		\
++	../gdbus/libdconf-gdbus-thread-shared.la	\
++	../gvdb/libgvdb-shared.la			\
++	../shm/libdconf-shm-shared.la			\
+ 	$(gio_LIBS)
+-libdconf_so_1_0_0_LDFLAGS = -shared -Wl,-soname=libdconf.so.1
+-libdconf_so_1_0_0_SOURCES = $(libdconf_client_a_SOURCES)
++libdconf_la_LDFLAGS = -version-number 1:0:0 -no-undefined
++libdconf_la_SOURCES = $(libdconf_client_a_SOURCES)
+ 
+ EXTRA_DIST = dconf.vapi dconf.deps
+ 
+@@ -42,5 +29,3 @@ vapidir = $(datadir)/vala/vapi
+ 
+ pkgconfigdir = $(libdir)/pkgconfig
+ pkgconfig_DATA = dconf.pc
+-
+-CLEANFILES = libdconf.so.1 libdconf.so
+--- origsrc/dconf-0.14.1/common/Makefile.am	2012-08-13 22:35:15.000000000 -0500
++++ src/dconf-0.14.1/common/Makefile.am	2012-12-19 01:37:35.867061700 -0600
+@@ -5,15 +5,16 @@ dconfcommoninclude_HEADERS = \
+ 	dconf-changeset.h	\
+ 	dconf-paths.h
+ 
+-noinst_LIBRARIES = libdconf-common.a libdconf-common-shared.a libdconf-common-hidden.a
++noinst_LIBRARIES = libdconf-common.a
++noinst_LTLIBRARIES = libdconf-common-shared.la libdconf-common-hidden.la
+ 
+ libdconf_common_a_CFLAGS = $(glib_CFLAGS)
+ libdconf_common_a_SOURCES = \
+ 	dconf-changeset.c	\
+ 	dconf-paths.c
+ 
+-libdconf_common_shared_a_CFLAGS = $(libdconf_common_a_CFLAGS) -fPIC -DPIC
+-libdconf_common_shared_a_SOURCES = $(libdconf_common_a_SOURCES)
++libdconf_common_shared_la_CFLAGS = $(libdconf_common_a_CFLAGS)
++libdconf_common_shared_la_SOURCES = $(libdconf_common_a_SOURCES)
+ 
+-libdconf_common_hidden_a_CFLAGS = $(libdconf_common_a_CFLAGS) -fPIC -DPIC -fvisibility=hidden
+-libdconf_common_hidden_a_SOURCES = $(libdconf_common_a_SOURCES)
++libdconf_common_hidden_la_CFLAGS = $(libdconf_common_a_CFLAGS) -fvisibility=hidden
++libdconf_common_hidden_la_SOURCES = $(libdconf_common_a_SOURCES)
+--- origsrc/dconf-0.14.1/configure.ac	2012-11-01 10:09:05.000000000 -0500
++++ src/dconf-0.14.1/configure.ac	2012-12-19 01:28:19.970266200 -0600
+@@ -19,7 +19,7 @@ fi
+ # Check for programs
+ AC_PROG_CC
+ AM_PROG_VALAC([0.17.0])
+-AC_PROG_RANLIB
++AC_PROG_LIBTOOL
+ AC_PATH_PROG([XSLTPROC], [xsltproc])
+ 
+ # Use GSettings
+--- origsrc/dconf-0.14.1/dbus-1/Makefile.am	2012-08-13 22:35:15.000000000 -0500
++++ src/dconf-0.14.1/dbus-1/Makefile.am	2012-12-19 01:46:22.214167000 -0600
+@@ -1,14 +1,16 @@
+ include $(top_srcdir)/Makefile.gtester
+ 
+-noinst_LIBRARIES = libdconf-libdbus-1.a libdconf-libdbus-1-shared.a
++lib_LTLIBRARIES = libdconf-dbus-1.la
++noinst_LIBRARIES = libdconf-libdbus-1.a
++noinst_LTLIBRARIES = libdconf-libdbus-1-shared.la
+ 
+ libdconf_libdbus_1_a_CFLAGS = $(dbus_CFLAGS) $(glib_CFLAGS)
+ libdconf_libdbus_1_a_SOURCES = \
+ 	dconf-libdbus-1.h		\
+ 	dconf-libdbus-1.c
+ 
+-libdconf_libdbus_1_shared_a_CFLAGS = $(libdconf_libdbus_1_a_CFLAGS) -fPIC -DPIC
+-libdconf_libdbus_1_shared_a_SOURCES = $(libdconf_libdbus_1_a_SOURCES)
++libdconf_libdbus_1_shared_la_CFLAGS = $(libdconf_libdbus_1_a_CFLAGS)
++libdconf_libdbus_1_shared_la_SOURCES = $(libdconf_libdbus_1_a_SOURCES)
+ 
+ dconf_dbus_1includedir = $(includedir)/dconf-dbus-1
+ dconf_dbus_1include_HEADERS = dconf-dbus-1.h
+@@ -16,32 +18,14 @@ dconf_dbus_1include_HEADERS = dconf-dbus
+ pkgconfigdir = $(libdir)/pkgconfig
+ pkgconfig_DATA = dconf-dbus-1.pc
+ 
+-shlibdir = $(libdir)
+-shlib_PROGRAMS = libdconf-dbus-1.so.0.0.0
+-
+-libdconf_dbus_1_so_0_0_0_CFLAGS = $(dbus_CFLAGS) $(gio_CFLAGS) -fPIC -DPIC
+-libdconf_dbus_1_so_0_0_0_LDADD = \
+-	../engine/libdconf-engine-shared.a		\
+-	../common/libdconf-common-hidden.a		\
+-	./libdconf-libdbus-1-shared.a			\
+-	../gvdb/libgvdb-shared.a			\
+-	../shm/libdconf-shm-shared.a			\
++libdconf_dbus_1_la_CFLAGS = $(dbus_CFLAGS) $(gio_CFLAGS)
++libdconf_dbus_1_la_LIBADD = \
++	../engine/libdconf-engine-shared.la		\
++	../common/libdconf-common-hidden.la		\
++	libdconf-libdbus-1-shared.la			\
++	../gvdb/libgvdb-shared.la			\
++	../shm/libdconf-shm-shared.la			\
+ 	 $(dbus_LIBS)					\
+ 	$(glib_LIBS)
+-libdconf_dbus_1_so_0_0_0_LDFLAGS = -shared -Wl,-soname=libdconf-dbus-1.so.0
+-libdconf_dbus_1_so_0_0_0_SOURCES = dconf-dbus-1.c
+-
+-nodist_noinst_DATA = libdconf-dbus-1.so libdconf-dbus-1.so.0
+-
+-libdconf-dbus-1.so.0 libdconf-dbus-1.so: libdconf-dbus-1.so.0.0.0
+-	$(AM_V_GEN) ln -fs libdconf-dbus-1.so.0.0.0 $@
+-
+-install-data-hook:
+-	ln -fs libdconf-dbus-1.so.0.0.0 $(DESTDIR)$(shlibdir)/libdconf-dbus-1.so.0
+-	ln -fs libdconf-dbus-1.so.0.0.0 $(DESTDIR)$(shlibdir)/libdconf-dbus-1.so
+-
+-uninstall-hook:
+-	rm -f $(DESTDIR)$(shlibdir)/libdconf-dbus-1.so.0
+-	rm -f $(DESTDIR)$(shlibdir)/libdconf-dbus-1.so
+-
+-CLEANFILES = libdconf-dbus-1.so.0 libdconf-dbus-1.so
++libdconf_dbus_1_la_LDFLAGS = -version-number 0:0:0 -no-undefined
++libdconf_dbus_1_la_SOURCES = dconf-dbus-1.c
+--- origsrc/dconf-0.14.1/editor/Makefile.am	2012-08-13 22:35:15.000000000 -0500
++++ src/dconf-0.14.1/editor/Makefile.am	2012-12-19 01:23:49.282783800 -0600
+@@ -7,7 +7,7 @@ bin_PROGRAMS = dconf-editor
+ dconf_editor_VALAFLAGS = --vapidir ../client --pkg gtk+-3.0 --pkg gmodule-2.0 --pkg libxml-2.0 --pkg dconf
+ 
+ dconf_editor_LDADD = \
+-	../client/libdconf.so.1		\
++	../client/libdconf.la		\
+ 	$(gtk_LIBS)			\
+ 	$(gee_LIBS)			\
+ 	$(gmodule_LIBS)			\
+--- origsrc/dconf-0.14.1/engine/Makefile.am	2012-11-01 10:03:15.000000000 -0500
++++ src/dconf-0.14.1/engine/Makefile.am	2012-12-19 01:24:24.040771800 -0600
+@@ -1,6 +1,7 @@
+ include $(top_srcdir)/Makefile.gtester
+ 
+-noinst_LIBRARIES = libdconf-engine.a libdconf-engine-shared.a
++noinst_LIBRARIES = libdconf-engine.a
++noinst_LTLIBRARIES = libdconf-engine-shared.la
+ 
+ libdconf_engine_a_CFLAGS = $(glib_CFLAGS)
+ libdconf_engine_a_SOURCES = \
+@@ -14,5 +15,5 @@ libdconf_engine_a_SOURCES = \
+ 	dconf-engine.h			\
+ 	dconf-engine.c
+ 
+-libdconf_engine_shared_a_CFLAGS = $(libdconf_engine_a_CFLAGS) -fPIC -DPIC
+-libdconf_engine_shared_a_SOURCES = $(libdconf_engine_a_SOURCES)
++libdconf_engine_shared_la_CFLAGS = $(libdconf_engine_a_CFLAGS)
++libdconf_engine_shared_la_SOURCES = $(libdconf_engine_a_SOURCES)
+--- origsrc/dconf-0.14.1/gdbus/Makefile.am	2012-08-13 22:35:15.000000000 -0500
++++ src/dconf-0.14.1/gdbus/Makefile.am	2012-12-19 01:25:35.500859100 -0600
+@@ -2,20 +2,21 @@ include $(top_srcdir)/Makefile.gtester
+ 
+ noinst_LIBRARIES = \
+ 	libdconf-gdbus-thread.a			\
+-	libdconf-gdbus-thread-shared.a		\
+-	libdconf-gdbus-filter.a			\
+-	libdconf-gdbus-filter-shared.a
++	libdconf-gdbus-filter.a
++noinst_LTLIBRARIES = \
++	libdconf-gdbus-thread-shared.la		\
++	libdconf-gdbus-filter-shared.la
+ 
+ libdconf_gdbus_thread_a_CFLAGS = $(gio_CFLAGS)
+ libdconf_gdbus_thread_a_SOURCES = \
+ 	dconf-gdbus-thread.c
+ 
+-libdconf_gdbus_thread_shared_a_CFLAGS = $(libdconf_gdbus_thread_a_CFLAGS) -fPIC -DPIC
+-libdconf_gdbus_thread_shared_a_SOURCES = $(libdconf_gdbus_thread_a_SOURCES)
++libdconf_gdbus_thread_shared_la_CFLAGS = $(libdconf_gdbus_thread_a_CFLAGS)
++libdconf_gdbus_thread_shared_la_SOURCES = $(libdconf_gdbus_thread_a_SOURCES)
+ 
+ libdconf_gdbus_filter_a_CFLAGS = $(gio_CFLAGS)
+ libdconf_gdbus_filter_a_SOURCES = \
+ 	dconf-gdbus-filter.c
+ 
+-libdconf_gdbus_filter_shared_a_CFLAGS = $(libdconf_gdbus_filter_a_CFLAGS) -fPIC -DPIC
+-libdconf_gdbus_filter_shared_a_SOURCES = $(libdconf_gdbus_filter_a_SOURCES)
++libdconf_gdbus_filter_shared_la_CFLAGS = $(libdconf_gdbus_filter_a_CFLAGS)
++libdconf_gdbus_filter_shared_la_SOURCES = $(libdconf_gdbus_filter_a_SOURCES)
+--- origsrc/dconf-0.14.1/gsettings/Makefile.am	2012-08-13 22:35:15.000000000 -0500
++++ src/dconf-0.14.1/gsettings/Makefile.am	2012-12-19 01:26:40.903599900 -0600
+@@ -1,18 +1,18 @@
+ include $(top_srcdir)/Makefile.gtester
+ 
+-giomodules_PROGRAMS = libdconfsettings.so
++giomodules_LTLIBRARIES = libdconfsettings.la
+ 
+-libdconfsettings_so_LDADD = \
+-	../engine/libdconf-engine-shared.a		\
+-	../gvdb/libgvdb-shared.a			\
+-	../gdbus/libdconf-gdbus-thread-shared.a		\
+-	../common/libdconf-common-hidden.a		\
+-	../shm/libdconf-shm-shared.a			\
++libdconfsettings_la_LIBADD = \
++	../engine/libdconf-engine-shared.la		\
++	../gvdb/libgvdb-shared.la			\
++	../gdbus/libdconf-gdbus-thread-shared.la	\
++	../common/libdconf-common-hidden.la		\
++	../shm/libdconf-shm-shared.la			\
+ 	$(gio_LIBS)
+ 
+-libdconfsettings_so_CFLAGS = $(gio_CFLAGS) -fPIC -DPIC
+-libdconfsettings_so_LDFLAGS = -shared
+-libdconfsettings_so_SOURCES = \
++libdconfsettings_la_CFLAGS = $(gio_CFLAGS)
++libdconfsettings_la_LDFLAGS = -module -avoid-version -no-undefined
++libdconfsettings_la_SOURCES = \
+ 	dconfsettingsbackend.c
+ 
+ uninstall-hook:
+--- origsrc/dconf-0.14.1/gvdb/Makefile.am	2012-08-13 22:35:15.000000000 -0500
++++ src/dconf-0.14.1/gvdb/Makefile.am	2012-12-19 01:27:06.583068700 -0600
+@@ -1,6 +1,7 @@
+ include $(top_srcdir)/Makefile.gtester
+ 
+-noinst_LIBRARIES = libgvdb.a libgvdb-shared.a
++noinst_LIBRARIES = libgvdb.a
++noinst_LTLIBRARIES = libgvdb-shared.la
+ 
+ libgvdb_a_CFLAGS = $(glib_CFLAGS)
+ libgvdb_a_SOURCES = \
+@@ -10,5 +11,5 @@ libgvdb_a_SOURCES = \
+ 	gvdb-reader.h	\
+ 	gvdb-reader.c
+ 
+-libgvdb_shared_a_CFLAGS = $(libgvdb_a_CFLAGS) -fPIC -DPIC
+-libgvdb_shared_a_SOURCES = $(libgvdb_a_SOURCES)
++libgvdb_shared_la_CFLAGS = $(libgvdb_a_CFLAGS)
++libgvdb_shared_la_SOURCES = $(libgvdb_a_SOURCES)
+--- origsrc/dconf-0.14.1/shm/Makefile.am	2012-11-01 10:03:15.000000000 -0500
++++ src/dconf-0.14.1/shm/Makefile.am	2012-12-19 01:27:43.294168500 -0600
+@@ -1,11 +1,12 @@
+ include $(top_srcdir)/Makefile.gtester
+ 
+-noinst_LIBRARIES = libdconf-shm.a libdconf-shm-shared.a
++noinst_LIBRARIES = libdconf-shm.a
++noinst_LTLIBRARIES = libdconf-shm-shared.la
+ 
+ libdconf_shm_a_CFLAGS = $(glib_CFLAGS)
+ libdconf_shm_a_SOURCES = \
+ 	dconf-shm.h		\
+ 	dconf-shm.c
+ 
+-libdconf_shm_shared_a_CFLAGS = $(libdconf_shm_a_CFLAGS) -fPIC -DPIC
+-libdconf_shm_shared_a_SOURCES = $(libdconf_shm_a_SOURCES)
++libdconf_shm_shared_la_CFLAGS = $(libdconf_shm_a_CFLAGS)
++libdconf_shm_shared_la_SOURCES = $(libdconf_shm_a_SOURCES)
