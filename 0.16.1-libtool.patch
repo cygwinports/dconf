@@ -1,5 +1,5 @@
---- origsrc/dconf-0.14.1/bin/Makefile.am	2012-08-13 22:35:15.000000000 -0500
-+++ src/dconf-0.14.1/bin/Makefile.am	2012-12-19 01:17:53.262420600 -0600
+--- origsrc/dconf-0.16.1/bin/Makefile.am	2013-07-16 11:20:20.000000000 -0500
++++ src/dconf-0.16.1/bin/Makefile.am	2013-08-05 19:27:41.745400100 -0500
 @@ -11,7 +11,7 @@ dconf_CFLAGS = \
  	-w
  
@@ -9,8 +9,8 @@
  	$(gio_LIBS)
  
  dconf_SOURCES = \
---- origsrc/dconf-0.14.1/client/Makefile.am	2012-08-13 22:35:15.000000000 -0500
-+++ src/dconf-0.14.1/client/Makefile.am	2012-12-19 01:20:47.826405100 -0600
+--- origsrc/dconf-0.16.1/client/Makefile.am	2013-07-16 11:20:19.000000000 -0500
++++ src/dconf-0.16.1/client/Makefile.am	2013-08-05 19:29:26.967418400 -0500
 @@ -1,21 +1,8 @@
  include $(top_srcdir)/Makefile.gtester
  
@@ -55,7 +55,7 @@
  	$(gio_LIBS)
 -libdconf_so_1_0_0_LDFLAGS = -shared -Wl,-soname=libdconf.so.1
 -libdconf_so_1_0_0_SOURCES = $(libdconf_client_a_SOURCES)
-+libdconf_la_LDFLAGS = -version-number 1:0:0 -no-undefined
++libdconf_la_LDFLAGS = -shared -version-number 1:0:0 -no-undefined
 +libdconf_la_SOURCES = $(libdconf_client_a_SOURCES)
  
  EXTRA_DIST = dconf.vapi dconf.deps
@@ -66,8 +66,8 @@
  pkgconfig_DATA = dconf.pc
 -
 -CLEANFILES = libdconf.so.1 libdconf.so
---- origsrc/dconf-0.14.1/common/Makefile.am	2012-08-13 22:35:15.000000000 -0500
-+++ src/dconf-0.14.1/common/Makefile.am	2012-12-19 01:37:35.867061700 -0600
+--- origsrc/dconf-0.16.1/common/Makefile.am	2013-07-16 11:20:19.000000000 -0500
++++ src/dconf-0.16.1/common/Makefile.am	2013-08-05 19:30:07.008708700 -0500
 @@ -5,15 +5,16 @@ dconfcommoninclude_HEADERS = \
  	dconf-changeset.h	\
  	dconf-paths.h
@@ -76,7 +76,7 @@
 +noinst_LIBRARIES = libdconf-common.a
 +noinst_LTLIBRARIES = libdconf-common-shared.la libdconf-common-hidden.la
  
- libdconf_common_a_CFLAGS = $(glib_CFLAGS)
+ libdconf_common_a_CFLAGS = $(glib_CFLAGS) -DG_LOG_DOMAIN=\"dconf\"
  libdconf_common_a_SOURCES = \
  	dconf-changeset.c	\
  	dconf-paths.c
@@ -90,28 +90,27 @@
 -libdconf_common_hidden_a_SOURCES = $(libdconf_common_a_SOURCES)
 +libdconf_common_hidden_la_CFLAGS = $(libdconf_common_a_CFLAGS) -fvisibility=hidden
 +libdconf_common_hidden_la_SOURCES = $(libdconf_common_a_SOURCES)
---- origsrc/dconf-0.14.1/configure.ac	2012-11-01 10:09:05.000000000 -0500
-+++ src/dconf-0.14.1/configure.ac	2012-12-19 01:28:19.970266200 -0600
+--- origsrc/dconf-0.16.1/configure.ac	2013-07-16 11:24:09.000000000 -0500
++++ src/dconf-0.16.1/configure.ac	2013-08-05 19:38:45.910388200 -0500
 @@ -19,7 +19,7 @@ fi
  # Check for programs
  AC_PROG_CC
  AM_PROG_VALAC([0.17.0])
 -AC_PROG_RANLIB
 +AC_PROG_LIBTOOL
- AC_PATH_PROG([XSLTPROC], [xsltproc])
- 
- # Use GSettings
---- origsrc/dconf-0.14.1/dbus-1/Makefile.am	2012-08-13 22:35:15.000000000 -0500
-+++ src/dconf-0.14.1/dbus-1/Makefile.am	2012-12-19 01:46:22.214167000 -0600
-@@ -1,14 +1,16 @@
+ AC_ARG_ENABLE(man,
+               [AS_HELP_STRING([--enable-man],
+                               [generate man pages [default=yes]])],,
+--- origsrc/dconf-0.16.1/dbus-1/Makefile.am	2013-07-16 11:20:19.000000000 -0500
++++ src/dconf-0.16.1/dbus-1/Makefile.am	2013-08-05 19:31:42.142150000 -0500
+@@ -1,14 +1,15 @@
  include $(top_srcdir)/Makefile.gtester
  
 -noinst_LIBRARIES = libdconf-libdbus-1.a libdconf-libdbus-1-shared.a
-+lib_LTLIBRARIES = libdconf-dbus-1.la
 +noinst_LIBRARIES = libdconf-libdbus-1.a
 +noinst_LTLIBRARIES = libdconf-libdbus-1-shared.la
  
- libdconf_libdbus_1_a_CFLAGS = $(dbus_CFLAGS) $(glib_CFLAGS)
+ libdconf_libdbus_1_a_CFLAGS = $(dbus_CFLAGS) $(glib_CFLAGS) -DG_LOG_DOMAIN=\"dconf\"
  libdconf_libdbus_1_a_SOURCES = \
  	dconf-libdbus-1.h		\
  	dconf-libdbus-1.c
@@ -123,13 +122,14 @@
  
  dconf_dbus_1includedir = $(includedir)/dconf-dbus-1
  dconf_dbus_1include_HEADERS = dconf-dbus-1.h
-@@ -16,32 +18,14 @@ dconf_dbus_1include_HEADERS = dconf-dbus
+@@ -16,32 +17,16 @@ dconf_dbus_1include_HEADERS = dconf-dbus
  pkgconfigdir = $(libdir)/pkgconfig
  pkgconfig_DATA = dconf-dbus-1.pc
  
 -shlibdir = $(libdir)
 -shlib_PROGRAMS = libdconf-dbus-1.so.0.0.0
--
++lib_LTLIBRARIES = libdconf-dbus-1.la
+ 
 -libdconf_dbus_1_so_0_0_0_CFLAGS = $(dbus_CFLAGS) $(gio_CFLAGS) -fPIC -DPIC
 -libdconf_dbus_1_so_0_0_0_LDADD = \
 -	../engine/libdconf-engine-shared.a		\
@@ -163,10 +163,10 @@
 -	rm -f $(DESTDIR)$(shlibdir)/libdconf-dbus-1.so
 -
 -CLEANFILES = libdconf-dbus-1.so.0 libdconf-dbus-1.so
-+libdconf_dbus_1_la_LDFLAGS = -version-number 0:0:0 -no-undefined
++libdconf_dbus_1_la_LDFLAGS = -shared -version-number 0:0:0 -no-undefined
 +libdconf_dbus_1_la_SOURCES = dconf-dbus-1.c
---- origsrc/dconf-0.14.1/editor/Makefile.am	2012-08-13 22:35:15.000000000 -0500
-+++ src/dconf-0.14.1/editor/Makefile.am	2012-12-19 01:23:49.282783800 -0600
+--- origsrc/dconf-0.16.1/editor/Makefile.am	2013-07-16 11:20:20.000000000 -0500
++++ src/dconf-0.16.1/editor/Makefile.am	2013-08-05 19:32:04.659437900 -0500
 @@ -7,7 +7,7 @@ bin_PROGRAMS = dconf-editor
  dconf_editor_VALAFLAGS = --vapidir ../client --pkg gtk+-3.0 --pkg gmodule-2.0 --pkg libxml-2.0 --pkg dconf
  
@@ -176,8 +176,8 @@
  	$(gtk_LIBS)			\
  	$(gee_LIBS)			\
  	$(gmodule_LIBS)			\
---- origsrc/dconf-0.14.1/engine/Makefile.am	2012-11-01 10:03:15.000000000 -0500
-+++ src/dconf-0.14.1/engine/Makefile.am	2012-12-19 01:24:24.040771800 -0600
+--- origsrc/dconf-0.16.1/engine/Makefile.am	2013-07-16 11:20:19.000000000 -0500
++++ src/dconf-0.16.1/engine/Makefile.am	2013-08-05 19:32:26.703698800 -0500
 @@ -1,6 +1,7 @@
  include $(top_srcdir)/Makefile.gtester
  
@@ -185,9 +185,9 @@
 +noinst_LIBRARIES = libdconf-engine.a
 +noinst_LTLIBRARIES = libdconf-engine-shared.la
  
- libdconf_engine_a_CFLAGS = $(glib_CFLAGS)
+ libdconf_engine_a_CFLAGS = $(glib_CFLAGS) -DG_LOG_DOMAIN=\"dconf\"
  libdconf_engine_a_SOURCES = \
-@@ -14,5 +15,5 @@ libdconf_engine_a_SOURCES = \
+@@ -15,5 +16,5 @@ libdconf_engine_a_SOURCES = \
  	dconf-engine.h			\
  	dconf-engine.c
  
@@ -195,8 +195,8 @@
 -libdconf_engine_shared_a_SOURCES = $(libdconf_engine_a_SOURCES)
 +libdconf_engine_shared_la_CFLAGS = $(libdconf_engine_a_CFLAGS)
 +libdconf_engine_shared_la_SOURCES = $(libdconf_engine_a_SOURCES)
---- origsrc/dconf-0.14.1/gdbus/Makefile.am	2012-08-13 22:35:15.000000000 -0500
-+++ src/dconf-0.14.1/gdbus/Makefile.am	2012-12-19 01:25:35.500859100 -0600
+--- origsrc/dconf-0.16.1/gdbus/Makefile.am	2013-07-16 11:20:19.000000000 -0500
++++ src/dconf-0.16.1/gdbus/Makefile.am	2013-08-05 19:33:19.163699300 -0500
 @@ -2,20 +2,21 @@ include $(top_srcdir)/Makefile.gtester
  
  noinst_LIBRARIES = \
@@ -209,7 +209,7 @@
 +	libdconf-gdbus-thread-shared.la		\
 +	libdconf-gdbus-filter-shared.la
  
- libdconf_gdbus_thread_a_CFLAGS = $(gio_CFLAGS)
+ libdconf_gdbus_thread_a_CFLAGS = $(gio_CFLAGS) -DG_LOG_DOMAIN=\"dconf\"
  libdconf_gdbus_thread_a_SOURCES = \
  	dconf-gdbus-thread.c
  
@@ -218,7 +218,7 @@
 +libdconf_gdbus_thread_shared_la_CFLAGS = $(libdconf_gdbus_thread_a_CFLAGS)
 +libdconf_gdbus_thread_shared_la_SOURCES = $(libdconf_gdbus_thread_a_SOURCES)
  
- libdconf_gdbus_filter_a_CFLAGS = $(gio_CFLAGS)
+ libdconf_gdbus_filter_a_CFLAGS = $(gio_CFLAGS) -DG_LOG_DOMAIN=\"dconf\"
  libdconf_gdbus_filter_a_SOURCES = \
  	dconf-gdbus-filter.c
  
@@ -226,8 +226,8 @@
 -libdconf_gdbus_filter_shared_a_SOURCES = $(libdconf_gdbus_filter_a_SOURCES)
 +libdconf_gdbus_filter_shared_la_CFLAGS = $(libdconf_gdbus_filter_a_CFLAGS)
 +libdconf_gdbus_filter_shared_la_SOURCES = $(libdconf_gdbus_filter_a_SOURCES)
---- origsrc/dconf-0.14.1/gsettings/Makefile.am	2012-08-13 22:35:15.000000000 -0500
-+++ src/dconf-0.14.1/gsettings/Makefile.am	2012-12-19 01:26:40.903599900 -0600
+--- origsrc/dconf-0.16.1/gsettings/Makefile.am	2013-07-16 11:20:19.000000000 -0500
++++ src/dconf-0.16.1/gsettings/Makefile.am	2013-08-05 19:40:15.125491000 -0500
 @@ -1,18 +1,18 @@
  include $(top_srcdir)/Makefile.gtester
  
@@ -248,17 +248,17 @@
 +	../shm/libdconf-shm-shared.la			\
  	$(gio_LIBS)
  
--libdconfsettings_so_CFLAGS = $(gio_CFLAGS) -fPIC -DPIC
+-libdconfsettings_so_CFLAGS = $(gio_CFLAGS) -fPIC -DPIC -DG_LOG_DOMAIN=\"dconf\"
 -libdconfsettings_so_LDFLAGS = -shared
 -libdconfsettings_so_SOURCES = \
-+libdconfsettings_la_CFLAGS = $(gio_CFLAGS)
-+libdconfsettings_la_LDFLAGS = -module -avoid-version -no-undefined
++libdconfsettings_la_CFLAGS = $(gio_CFLAGS) -DG_LOG_DOMAIN=\"dconf\"
++libdconfsettings_la_LDFLAGS = -shared -module -avoid-version -no-undefined
 +libdconfsettings_la_SOURCES = \
  	dconfsettingsbackend.c
  
  uninstall-hook:
---- origsrc/dconf-0.14.1/gvdb/Makefile.am	2012-08-13 22:35:15.000000000 -0500
-+++ src/dconf-0.14.1/gvdb/Makefile.am	2012-12-19 01:27:06.583068700 -0600
+--- origsrc/dconf-0.16.1/gvdb/Makefile.am	2013-07-16 11:20:19.000000000 -0500
++++ src/dconf-0.16.1/gvdb/Makefile.am	2013-08-05 19:34:26.491550200 -0500
 @@ -1,6 +1,7 @@
  include $(top_srcdir)/Makefile.gtester
  
@@ -266,7 +266,7 @@
 +noinst_LIBRARIES = libgvdb.a
 +noinst_LTLIBRARIES = libgvdb-shared.la
  
- libgvdb_a_CFLAGS = $(glib_CFLAGS)
+ libgvdb_a_CFLAGS = $(glib_CFLAGS) -DG_LOG_DOMAIN=\"gvdb\ \(via\ dconf\)\"
  libgvdb_a_SOURCES = \
 @@ -10,5 +11,5 @@ libgvdb_a_SOURCES = \
  	gvdb-reader.h	\
@@ -276,8 +276,8 @@
 -libgvdb_shared_a_SOURCES = $(libgvdb_a_SOURCES)
 +libgvdb_shared_la_CFLAGS = $(libgvdb_a_CFLAGS)
 +libgvdb_shared_la_SOURCES = $(libgvdb_a_SOURCES)
---- origsrc/dconf-0.14.1/shm/Makefile.am	2012-11-01 10:03:15.000000000 -0500
-+++ src/dconf-0.14.1/shm/Makefile.am	2012-12-19 01:27:43.294168500 -0600
+--- origsrc/dconf-0.16.1/shm/Makefile.am	2013-07-16 11:20:19.000000000 -0500
++++ src/dconf-0.16.1/shm/Makefile.am	2013-08-05 19:34:52.298026300 -0500
 @@ -1,11 +1,12 @@
  include $(top_srcdir)/Makefile.gtester
  
@@ -285,7 +285,7 @@
 +noinst_LIBRARIES = libdconf-shm.a
 +noinst_LTLIBRARIES = libdconf-shm-shared.la
  
- libdconf_shm_a_CFLAGS = $(glib_CFLAGS)
+ libdconf_shm_a_CFLAGS = $(glib_CFLAGS) -DG_LOG_DOMAIN=\"dconf\"
  libdconf_shm_a_SOURCES = \
  	dconf-shm.h		\
  	dconf-shm.c

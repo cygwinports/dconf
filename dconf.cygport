@@ -1,7 +1,7 @@
 inherit gnome2
 
 NAME="dconf"
-VERSION=0.14.1
+VERSION=0.16.1
 RELEASE=1
 CATEGORY="GNOME"
 SUMMARY="GNOME configuration system"
@@ -10,7 +10,7 @@ to provide a backend to GSettings on platforms that don't already have
 configuration storage systems."
 
 PATCH_URI="
-	0.14.1-libtool.patch
+	0.16.1-libtool.patch
 	0.14.1-cygwin.patch
 "
 
@@ -31,7 +31,7 @@ dconf_editor_CONTENTS="etc/postinstall/ usr/bin/dconf-editor.exe usr/share/appli
                        usr/share/dconf-editor/ usr/share/glib-2.0/schemas/
                        usr/share/icons/ usr/share/locale/ usr/share/man/man1/dconf-editor.*"
 dconf_service_REQUIRES="gvfs"
-dconf_service_CONTENTS="etc/postinstall/ usr/lib/dconf/ usr/lib/gio/ usr/share/dbus-1/
+dconf_service_CONTENTS="etc/postinstall/ usr/libexec/ usr/lib/gio/ usr/share/dbus-1/
                          usr/share/man/man1/dconf-service.* usr/share/man/man7/"
 libdconf1_SUMMARY="${SUMMARY} client library (GDBus runtime)"
 libdconf1_REQUIRES="dconf-service"
@@ -48,5 +48,4 @@ libdconf_dbus1_devel_CONTENTS="usr/include/dconf-dbus-1/ usr/lib/libdconf-dbus-1
 vala_dconf_SUMMARY="${SUMMARY} client library (Vala bindings)"
 vala_dconf_CONTENTS="usr/share/vala*/vapi/dconf.*"
 
-CYGCONF_ARGS="--libexecdir=/usr/lib/dconf"
 MAKEOPTS+=" completiondir=/etc/bash_completion.d"
