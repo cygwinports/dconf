@@ -1,9 +1,9 @@
 inherit gnome2
 
 NAME="dconf"
-VERSION=0.16.1
+VERSION=0.18.0
 RELEASE=1
-CATEGORY="GNOME"
+CATEGORY="Libs"
 SUMMARY="GNOME configuration system"
 DESCRIPTION="dconf is a low-level configuration system. Its main purpose is
 to provide a backend to GSettings on platforms that don't already have
@@ -21,15 +21,18 @@ DEPEND="gnome-common
 	vala(gtk+-3.0)
 	vala(libxml-2.0)"
 
-PKG_NAMES="dconf dconf-editor dconf-service libdconf1 libdconf-devel
+PKG_NAMES="dconf dconf-editor dconf-service libdconf1 libdconf-devel libdconf-doc
            libdconf-dbus1_0 libdconf-dbus1-devel vala-dconf"
+dconf_CATEGORY="GNOME"
 dconf_SUMMARY="${SUMMARY} (client utility)"
 dconf_CONTENTS="etc/bash_completion.d/ usr/bin/dconf.exe usr/share/doc/
                 usr/share/man/man1/dconf.*"
+dconf_editor_CATEGORY="GNOME"
 dconf_editor_SUMMARY="${SUMMARY} (GUI preferences editor)"
 dconf_editor_CONTENTS="etc/postinstall/ usr/bin/dconf-editor.exe usr/share/applications/
-                       usr/share/dconf-editor/ usr/share/glib-2.0/schemas/
+                       usr/share/glib-2.0/schemas/
                        usr/share/icons/ usr/share/locale/ usr/share/man/man1/dconf-editor.*"
+dconf_service_CATEGORY="GNOME"
 dconf_service_REQUIRES="gvfs"
 dconf_service_CONTENTS="etc/postinstall/ usr/libexec/ usr/lib/gio/ usr/share/dbus-1/
                          usr/share/man/man1/dconf-service.* usr/share/man/man7/"
@@ -37,8 +40,10 @@ libdconf1_SUMMARY="${SUMMARY} client library (GDBus runtime)"
 libdconf1_REQUIRES="dconf-service"
 libdconf1_CONTENTS="usr/bin/cygdconf-1.dll"
 libdconf_devel_SUMMARY="${SUMMARY} client library (GDBus development)"
-libdconf_devel_CONTENTS="usr/include/dconf/ usr/lib/libdconf.*
-                         usr/lib/pkgconfig/dconf.pc usr/share/gtk-doc/"
+libdconf_devel_CONTENTS="usr/include/dconf/ usr/lib/libdconf.* usr/lib/pkgconfig/dconf.pc"
+libdconf_doc_CATEGORY="Doc"
+libdconf_doc_SUMMARY="${SUMMARY} client library (API documentation)"
+libdconf_doc_CONTENTS="usr/share/gtk-doc/"
 libdconf_dbus1_0_SUMMARY="${SUMMARY} client library (libdbus runtime)"
 libdconf_dbus1_0_REQUIRES="dconf-service"
 libdconf_dbus1_0_CONTENTS="usr/bin/cygdconf-dbus-1-0.dll"
