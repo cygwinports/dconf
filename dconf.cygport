@@ -33,7 +33,6 @@ dconf_editor_CONTENTS="etc/postinstall/ usr/bin/dconf-editor.exe usr/share/appli
                        usr/share/glib-2.0/schemas/
                        usr/share/icons/ usr/share/locale/ usr/share/man/man1/dconf-editor.*"
 dconf_service_CATEGORY="GNOME"
-dconf_service_REQUIRES="gvfs"
 dconf_service_CONTENTS="etc/postinstall/ usr/libexec/ usr/lib/gio/ usr/share/dbus-1/
                          usr/share/man/man1/dconf-service.* usr/share/man/man7/"
 libdconf1_SUMMARY="${SUMMARY} client library (GDBus runtime)"
