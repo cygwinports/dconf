@@ -1,7 +1,7 @@
 inherit gnome2
 
 NAME="dconf"
-VERSION=0.18.0
+VERSION=0.22.0
 RELEASE=1
 CATEGORY="Libs"
 SUMMARY="GNOME configuration system"
@@ -10,8 +10,8 @@ to provide a backend to GSettings on platforms that don't already have
 configuration storage systems."
 
 PATCH_URI="
-	0.16.1-libtool.patch
-	0.14.1-cygwin.patch
+	0.22.0-libtool.patch
+	0.22.0-cygwin-tests.patch
 "
 
 DEPEND="gnome-common
@@ -30,7 +30,7 @@ dconf_CONTENTS="etc/bash_completion.d/ usr/bin/dconf.exe usr/share/doc/
 dconf_editor_CATEGORY="GNOME"
 dconf_editor_SUMMARY="${SUMMARY} (GUI preferences editor)"
 dconf_editor_CONTENTS="etc/postinstall/ usr/bin/dconf-editor.exe usr/share/applications/
-                       usr/share/glib-2.0/schemas/
+                       usr/share/appdata/ usr/share/glib-2.0/schemas/
                        usr/share/icons/ usr/share/locale/ usr/share/man/man1/dconf-editor.*"
 dconf_service_CATEGORY="GNOME"
 dconf_service_CONTENTS="etc/postinstall/ usr/libexec/ usr/lib/gio/ usr/share/dbus-1/
