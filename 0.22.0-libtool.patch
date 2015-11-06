@@ -166,17 +166,6 @@
 -CLEANFILES = libdconf-dbus-1.so.0 libdconf-dbus-1.so
 +libdconf_dbus_1_la_LDFLAGS = -shared -version-number 0:0:0 -no-undefined
 +libdconf_dbus_1_la_SOURCES = dconf-dbus-1.c
---- origsrc/dconf-0.22.0/editor/Makefile.am	2014-09-19 11:19:46.000000000 -0500
-+++ src/dconf-0.22.0/editor/Makefile.am	2015-01-04 13:12:58.000872900 -0600
-@@ -7,7 +7,7 @@ bin_PROGRAMS = dconf-editor
- dconf_editor_VALAFLAGS = --vapidir ../client --pkg gtk+-3.0 --pkg gmodule-2.0 --pkg libxml-2.0 --pkg dconf
- 
- dconf_editor_LDADD = \
--	../client/libdconf.so.1		\
-+	../client/libdconf.la		\
- 	$(gtk_LIBS)			\
- 	$(gee_LIBS)			\
- 	$(gmodule_LIBS)			\
 --- origsrc/dconf-0.22.0/engine/Makefile.am	2014-03-03 14:58:21.000000000 -0600
 +++ src/dconf-0.22.0/engine/Makefile.am	2015-01-04 13:12:58.000872900 -0600
 @@ -1,6 +1,7 @@
