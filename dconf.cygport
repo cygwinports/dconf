@@ -16,9 +16,7 @@ PATCH_URI="
 
 DEPEND="gnome-common
 	pkgconfig(dbus-1)
-	pkgconfig(gtk+-3.0)
 	pkgconfig(libxml-2.0)
-	vala(gtk+-3.0)
 	vala(libxml-2.0)"
 
 PKG_NAMES="dconf dconf-service libdconf1 libdconf-devel libdconf-doc
