@@ -1,7 +1,7 @@
 inherit gnome2
 
 NAME="dconf"
-VERSION=0.24.0
+VERSION=0.26.0
 RELEASE=1
 CATEGORY="Libs"
 SUMMARY="GNOME configuration system"
@@ -15,18 +15,16 @@ PATCH_URI="
 "
 
 DEPEND="gnome-common
-	pkgconfig(dbus-1)
 	pkgconfig(libxml-2.0)
 	vala(libxml-2.0)"
 
-PKG_NAMES="dconf dconf-service libdconf1 libdconf-devel libdconf-doc
-           libdconf-dbus1_0 libdconf-dbus1-devel vala-dconf"
+PKG_NAMES="dconf dconf-service libdconf1 libdconf-devel libdconf-doc vala-dconf"
 dconf_CATEGORY="GNOME"
 dconf_SUMMARY="${SUMMARY} (client utility)"
 dconf_CONTENTS="etc/bash_completion.d/ usr/bin/dconf.exe usr/share/doc/
                 usr/share/man/man1/dconf.*"
 dconf_service_CATEGORY="GNOME"
-dconf_service_CONTENTS="etc/postinstall/ usr/libexec/ usr/lib/gio/ usr/share/dbus-1/
+dconf_service_CONTENTS="usr/libexec/ usr/lib/gio/ usr/share/dbus-1/
                          usr/share/man/man1/dconf-service.* usr/share/man/man7/"
 libdconf1_SUMMARY="${SUMMARY} client library (GDBus runtime)"
 libdconf1_REQUIRES="dconf-service"
@@ -37,12 +35,6 @@ libdconf_devel_CONTENTS="usr/include/dconf/ usr/lib/libdconf.* usr/lib/pkgconfig
 libdconf_doc_CATEGORY="Doc"
 libdconf_doc_SUMMARY="${SUMMARY} client library (API documentation)"
 libdconf_doc_CONTENTS="usr/share/gtk-doc/"
-libdconf_dbus1_0_SUMMARY="${SUMMARY} client library (libdbus runtime)"
-libdconf_dbus1_0_REQUIRES="dconf-service"
-libdconf_dbus1_0_CONTENTS="usr/bin/cygdconf-dbus-1-0.dll"
-libdconf_dbus1_devel_SUMMARY="${SUMMARY} client library (libdbus development)"
-libdconf_dbus1_devel_CONTENTS="usr/include/dconf-dbus-1/ usr/lib/libdconf-dbus-1.*
-                               usr/lib/pkgconfig/dconf-dbus-1.pc"
 vala_dconf_SUMMARY="${SUMMARY} client library (Vala bindings)"
 vala_dconf_CONTENTS="usr/share/vala*/vapi/dconf.*"
 
